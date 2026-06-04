@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>Nutricao</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;--border:#2a2a2a;--border2:#333333;--text:#f0f0f0;--text2:#999999;--text3:#555555;--blue:#4a9eff;--bdim:#1a3a5c;--green:#3ddc84;--gdim:#0d3320;--amber:#ffb347;--adim:#3d2800;--red:#ff5f57;--rdim:#3d1510;--purple:#b388ff;--pdim:#2a1a4a;--teal:#26c6a2;--tdim:#0a2e25;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:10px;--r2:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overscroll-behavior:none}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100dvh}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;padding-bottom:90px}
+.screen.active{display:flex}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100}
+.nbtn{flex:1;padding:10px 0 14px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;font-family:var(--sans)}
+.nbtn.active{color:var(--green)}
+.nbtn svg{width:20px;height:20px;stroke-width:1.8}
+.nlbl{font-size:9px;font-weight:500;letter-spacing:.04em}
+.pgh{padding:48px 20px 20px}
+.pggreet{font-size:13px;color:var(--text3);font-family:var(--mono);letter-spacing:.08em;margin-bottom:6px}
+.pgtitle{font-size:26px;font-weight:300;letter-spacing:-.5px;line-height:1.2}
+.pgtitle span{font-weight:600}
+.slbl{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:0 20px 10px}
+.dsel{display:flex;gap:8px;padding:0 20px 20px}
+.dbtn{flex:1;padding:12px 8px;border-radius:var(--r2);border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;text-align:center}
+.dbtn.m.active{background:var(--bdim);border-color:var(--blue);color:var(--blue)}
+.dbtn.n.active{background:var(--tdim);border-color:var(--teal);color:var(--teal)}
+.dbtn.d.active{background:var(--bg3);border-color:var(--border2);color:var(--text)}
+.dicon{font-size:18px;display:block;margin-bottom:4px}
+.dlabel{font-size:11px;display:block}
+.dkcal{font-size:10px;font-family:var(--mono);display:block;margin-top:2px;opacity:.7}
+.mbar{margin:0 20px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px}
+.mbartitle{font-size:12px;color:var(--text3);margin-bottom:10px;font-family:var(--mono)}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mi{text-align:center}
+.min{font-size:20px;font-weight:600;font-family:var(--mono)}
+.miu{font-size:9px;color:var(--text3)}
+.mil{font-size:10px;color:var(--text2);margin-top:2px}
+.mprog{margin-top:10px;display:flex;gap:3px;height:4px;border-radius:4px;overflow:hidden}
+.mpp{background:var(--blue);border-radius:4px}
+.mpc{background:var(--amber);border-radius:4px}
+.mpf{background:var(--green);border-radius:4px}
+.mlist{padding:0 20px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.mchdr{padding:13px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start}
+.mcl{flex:1}
+.mtime{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em}
+.mname{font-size:15px;font-weight:500;margin-top:2px}
+.mtag{font-size:9px;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px}
+.tpre{background:var(--adim);color:var(--amber)}
+.tpos{background:var(--gdim);color:var(--green)}
+.mcr{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mkcal{font-size:13px;font-weight:500;font-family:var(--mono)}
+.mpfc{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.mbody{display:none;border-top:1px solid var(--border)}
+.mbody.open{display:block}
+.ob{border-bottom:1px solid var(--border)}
+.ob:last-child{border-bottom:none}
+.ohdr{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+.ohl{display:flex;align-items:center;gap:8px;flex:1}
+.onum{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);color:var(--text3);flex-shrink:0}
+.onum.sel{background:var(--green);border-color:var(--green);color:#000}
+.oname{font-size:12px;font-weight:500;color:var(--text2)}
+.oname.sel{color:var(--green)}
+.selbtn{font-size:10px;padding:4px 10px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.selbtn.sel{background:var(--gdim);border-color:var(--green);color:var(--green)}
+.oitems{padding:4px 16px 12px 46px;display:flex;flex-direction:column;gap:3px}
+.oitem{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;padding:3px 0;border-bottom:.5px solid var(--border);gap:8px}
+.oitem:last-child{border-bottom:none}
+.oin{color:var(--text);flex:1}
+.oiq{color:var(--text3);font-family:var(--mono);font-size:10px;white-space:nowrap}
+.oim{color:var(--text3);font-size:10px;white-space:nowrap}
+.mnote{padding:8px 16px 12px;font-size:11px;color:var(--text3);font-style:italic;line-height:1.6}
+.savebtn{margin:0 20px 16px;width:calc(100% - 40px);padding:15px;border-radius:var(--r2);background:var(--green);border:none;color:#000;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer}
+.savedbanner{margin:0 20px 12px;background:var(--gdim);border:1px solid var(--green);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--green);display:flex;align-items:center;gap:8px}
+.tlwrap{padding:0 20px;display:flex;flex-direction:column;margin-bottom:16px}
+.tlrow{display:grid;grid-template-columns:60px 1fr;gap:0 10px;align-items:stretch}
+.tll{display:flex;flex-direction:column;align-items:center}
+.tlhr{font-size:10px;font-weight:500;color:var(--text3);font-family:var(--mono);padding-top:13px;text-align:center}
+.tlline{flex:1;width:1px;background:var(--border);margin:4px auto 0}
+.tlcard{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r2);padding:10px 13px;margin-bottom:8px}
+.tlcard.pre{border-left:3px solid var(--amber);border-radius:0 var(--r2) var(--r2) 0}
+.tlcard.pos{border-left:3px solid var(--green);border-radius:0 var(--r2) var(--r2) 0}
+.tlcard.supl{border-left:3px solid var(--purple);border-radius:0 var(--r2) var(--r2) 0}
+.tlcard.meal{border-left:3px solid var(--border2);border-radius:0 var(--r2) var(--r2) 0}
+.tltitle{font-size:12px;font-weight:500}
+.tlbody{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.6}
+.tlhi{font-size:11px;color:var(--amber);margin-top:3px;font-weight:500}
+.slist{padding:0 20px;display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.scard{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r2);padding:13px 15px}
+.sname{font-size:14px;font-weight:500;margin-bottom:8px}
+.srow{display:flex;gap:8px;padding:4px 0;border-bottom:.5px solid var(--border);font-size:11px;line-height:1.5}
+.srow:last-child{border-bottom:none}
+.srl{color:var(--text3);min-width:70px;flex-shrink:0;font-weight:500}
+.srv{color:var(--text2)}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:0 20px 16px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.scn{font-size:22px;font-weight:600;font-family:var(--mono)}
+.scl{font-size:11px;color:var(--text3);margin-top:2px}
+.biocard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin:0 20px 12px}
+.biotitle{font-size:14px;font-weight:500;margin-bottom:12px}
+.bioinputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.biof{display:flex;flex-direction:column;gap:4px}
+.biolbl{font-size:11px;color:var(--text3)}
+.bioinp{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 10px;text-align:center;width:100%}
+.bioinp:focus{outline:none;border-color:var(--green)}
+.biosavebtn{width:100%;padding:12px;border-radius:var(--r);background:var(--gdim);border:1px solid var(--green);color:var(--green);font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer}
+.biohist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.bioe{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.bioe:last-child{border-bottom:none}
+.bedate{color:var(--text3);font-family:var(--mono);font-size:10px}
+.bevals{display:flex;gap:10px}
+.beval{text-align:center}
+.ben{font-size:13px;font-weight:500;font-family:var(--mono)}
+.bel{font-size:9px;color:var(--text3)}
+.bed{font-size:10px;font-family:var(--mono)}
+.bed.up{color:var(--green)}
+.bed.dn{color:var(--red)}
+.expsec{padding:0 20px;display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.expbtn{padding:14px;border-radius:var(--r2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.hditem{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px;margin:0 20px 8px}
+.hdtop{display:flex;justify-content:space-between;margin-bottom:6px}
+.hddate{font-size:13px;font-weight:500}
+.hdtype{font-size:10px;padding:2px 8px;border-radius:10px;font-family:var(--mono)}
+.hdmeals{display:flex;flex-direction:column;gap:3px}
+.hdm{font-size:11px;color:var(--text3);display:flex;gap:6px}
+.hdmn{color:var(--text2)}
+.hdmo{color:var(--green);font-size:10px}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-hoje">
+  <div class="pgh">
+    <div class="pggreet" id="greeting">BOM DIA</div>
+    <div class="pgtitle">Plano<br><span style="color:var(--green)">Nutricional</span></div>
+  </div>
+  <div class="dsel">
+    <button class="dbtn m active" id="btn-m" onclick="selDay('m')">
+      <span class="dicon">&#127947;</span><span class="dlabel">Musculacao</span><span class="dkcal">1.900 kcal</span>
+    </button>
+    <button class="dbtn n" id="btn-n" onclick="selDay('n')">
+      <span class="dicon">&#127944;</span><span class="dlabel">Natacao</span><span class="dkcal">1.550 kcal</span>
+    </button>
+    <button class="dbtn d" id="btn-d" onclick="selDay('d')">
+      <span class="dicon">&#128564;</span><span class="dlabel">Descanso</span><span class="dkcal">1.450 kcal</span>
+    </button>
+  </div>
+  <div id="savedbanner" style="display:none" class="savedbanner">&#10003; Dia de hoje ja registrado</div>
+  <div class="mbar" id="mbar"></div>
+  <div class="slbl">REFEICOES DO DIA</div>
+  <div class="mlist" id="mlist"></div>
+  <button class="savebtn" onclick="saveToday()">Registrar dia de hoje &#10003;</button>
+</div>
+
+<div class="screen" id="screen-timing">
+  <div class="pgh">
+    <div class="pggreet">HORARIOS</div>
+    <div class="pgtitle">Timing<br><span style="color:var(--amber)">nutricional</span></div>
+  </div>
+  <div class="dsel" style="padding-bottom:12px">
+    <button class="dbtn m active" id="tbtn-m" onclick="selTimingDay('m')"><span class="dicon">&#127947;</span><span class="dlabel">Musculacao</span></button>
+    <button class="dbtn n" id="tbtn-n" onclick="selTimingDay('n')"><span class="dicon">&#127944;</span><span class="dlabel">Natacao</span></button>
+    <button class="dbtn d" id="tbtn-d" onclick="selTimingDay('d')"><span class="dicon">&#128564;</span><span class="dlabel">Descanso</span></button>
+  </div>
+  <div id="tcontent"></div>
+</div>
+
+<div class="screen" id="screen-supl">
+  <div class="pgh">
+    <div class="pggreet">PROTOCOLO</div>
+    <div class="pgtitle">Suplemen<br><span style="color:var(--purple)">tacao</span></div>
+  </div>
+  <div class="slbl">HORARIO DIARIO</div>
+  <div class="biocard">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr><th style="text-align:left;padding:5px 0;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px">HORARIO</th><th style="text-align:left;padding:5px 0;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px">SUPLEMENTO</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--amber);font-family:var(--mono);font-size:11px">07:30</td><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2)">Whey 35g + Creatina 5g</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--amber);font-family:var(--mono);font-size:11px">10:30</td><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2)">D3+K2 + Omega-3 (com iogurte)</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--amber);font-family:var(--mono);font-size:11px">14:00-14:30</td><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--blue)">Colageno 10-15g + Vit C 50mg (so dias muscu)</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--amber);font-family:var(--mono);font-size:11px">17:00</td><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2)">Whey 35g pos-treino (dias muscu)</td></tr>
+        <tr><td style="padding:7px 0;color:var(--amber);font-family:var(--mono);font-size:11px">20:00</td><td style="padding:7px 0;color:var(--text2)">Magnesio bisglicinato 200-400mg</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slbl">DETALHES</div>
+  <div class="slist" id="slist"></div>
+</div>
+
+<div class="screen" id="screen-hist">
+  <div class="pgh">
+    <div class="pggreet">EVOLUCAO</div>
+    <div class="pgtitle">Historico e<br><span style="color:var(--teal)">Bioimpedancia</span></div>
+  </div>
+  <div class="slbl">RESUMO</div>
+  <div class="sgrid" id="hstats"></div>
+  <div class="slbl">REGISTRAR BIOIMPEDANCIA</div>
+  <div class="biocard">
+    <div class="biotitle">Medicao corporal</div>
+    <div class="bioinputs">
+      <div class="biof"><div class="biolbl">Peso total (kg)</div><input class="bioinp" type="number" inputmode="decimal" placeholder="79.0" id="bio-peso"></div>
+      <div class="biof"><div class="biolbl">Massa magra (kg)</div><input class="bioinp" type="number" inputmode="decimal" placeholder="33.0" id="bio-mm"></div>
+      <div class="biof"><div class="biolbl">% Gordura</div><input class="bioinp" type="number" inputmode="decimal" placeholder="24.0" id="bio-gord"></div>
+      <div class="biof"><div class="biolbl">Gordura (kg)</div><input class="bioinp" type="number" inputmode="decimal" placeholder="19.0" id="bio-gkg"></div>
+    </div>
+    <button class="biosavebtn" onclick="saveBio()">Salvar medicao</button>
+    <div class="biohist" id="biohist"></div>
+  </div>
+  <div class="slbl">HISTORICO NUTRICIONAL</div>
+  <div id="hlist"></div>
+</div>
+
+<div class="screen" id="screen-exp">
+  <div class="pgh">
+    <div class="pggreet">DADOS</div>
+    <div class="pgtitle">Exportar e<br><span style="color:var(--blue)">Backup</span></div>
+  </div>
+  <div class="slbl">ACOES</div>
+  <div class="expsec">
+    <button class="expbtn" style="background:var(--adim);border:1px solid var(--amber);color:var(--amber)" onclick="expPDF()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      Exportar relatorio PDF
+    </button>
+    <button class="expbtn" style="background:var(--bdim);border:1px solid var(--blue);color:var(--blue)" onclick="expClaude()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Copiar dados para Claude
+    </button>
+    <button class="expbtn" style="background:var(--gdim);border:1px solid var(--green);color:var(--green)" onclick="expJSON()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Backup JSON
+    </button>
+    <button class="expbtn" style="background:transparent;border:1px solid var(--border2);color:var(--text2)" onclick="document.getElementById('impfile').click()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importar backup JSON
+    </button>
+    <input type="file" id="impfile" accept=".json" style="display:none" onchange="impData(event)">
+    <button class="expbtn" style="background:transparent;border:1px solid var(--border);color:var(--text3)" onclick="clearData()">Limpar todos os dados</button>
+  </div>
+  <div class="slbl">EQUIVALENCIAS</div>
+  <div class="biocard">
+    <div class="biotitle" style="font-size:13px;margin-bottom:8px">Pacoquinha x Pasta de amendoim</div>
+    <div style="font-size:11px;color:var(--text2);display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>2 Pacoquinhas (30g)</span><span style="font-family:var(--mono);color:var(--amber);font-size:10px">146kcal P4.8 C15.6 G7.8</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Pasta amendoim (25g)</span><span style="font-family:var(--mono);color:var(--amber);font-size:10px">147kcal P6.3 C4.9 G12.5</span></div>
+      <div style="padding:4px 0;color:var(--text3);font-size:10px">Dias treino: pacoquinha (mais carbo). Descanso/natacao: pasta (menos carbo)</div>
+    </div>
+  </div>
+</div>
+
+<nav class="bnav">
+  <button class="nbtn active" id="nav-hoje" onclick="goTab('hoje')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span class="nlbl">HOJE</span>
+  </button>
+  <button class="nbtn" id="nav-timing" onclick="goTab('timing')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+    <span class="nlbl">TIMING</span>
+  </button>
+  <button class="nbtn" id="nav-supl" onclick="goTab('supl')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+    <span class="nlbl">SUPLEM.</span>
+  </button>
+  <button class="nbtn" id="nav-hist" onclick="goTab('hist')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+    <span class="nlbl">EVOLUCAO</span>
+  </button>
+  <button class="nbtn" id="nav-exp" onclick="goTab('exp')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span class="nlbl">EXPORTAR</span>
+  </button>
+</nav>
+
+<script>
+var DAY = 'm';
+var TDAY = 'm';
+var SELOPT = {};
+
+var DAYS = {
+  m: {label:'Musculacao', kcal:1900, p:165, c:210, g:58},
+  n: {label:'Natacao',    kcal:1550, p:155, c:145, g:52},
+  d: {label:'Descanso',   kcal:1450, p:155, c:130, g:50}
+};
+
+var MEALS = {
+m: [
+  {id:'cafe', time:'07:30', name:'Cafe da manha', kcal:460, p:40, c:46, g:13, tag:'', note:'Whey com cafe com leite e a base. App Macros: Santa Helena Pacoquita 15g x2.',
+   opts:[
+    {n:'Whey + cafe + pacoquinha', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pacoquinha Santa Helena','30g (2 unid)','P ~5g C ~16g G ~8g']]},
+    {n:'Whey + cafe + pao integral', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pao de forma integral','50g (2 fatias)','C ~22g P ~4g']]},
+    {n:'Ovos + cafe + pao', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Leite sem lactose','150ml','P ~5g C ~7g'],['Pao de forma integral','25g (1 fatia)','C ~11g']]}
+   ]},
+  {id:'inter', time:'10:30-11:00', name:'Intermediario manha', kcal:245, p:22, c:24, g:7, tag:'', note:'',
+   opts:[
+    {n:'Iogurte grego + aveia', its:[['Iogurte grego sem lactose','170g (1 pote)','P ~17g C ~6g G ~9g'],['Aveia em flocos','20g (2 col sopa)','P ~3g C ~14g']]},
+    {n:'Cottage + torradas', its:[['Queijo cottage','100g','P ~14g C ~3g G ~4g'],['Torradas integrais','30g (4 torradas)','C ~20g G ~2g']]},
+    {n:'Peru + fruta', its:[['Presunto de peru','60g (2-3 fatias)','P ~13g G ~2g'],['Maca ou pera','150g (1 unidade)','C ~20g']]}
+   ]},
+  {id:'almoco', time:'13:00', name:'Almoco - pre-treino natural', kcal:730, p:52, c:90, g:18, tag:'pre', note:'Almoco as 13h = pre-treino perfeito para as 15h. Pese proteina crua; arroz e batata cozidos.',
+   opts:[
+    {n:'Frango + arroz + legumes', its:[['Frango grelhado peito s/ pele','180g cozido (220g cru)','P ~54g G ~4g'],['Arroz branco cozido','220g (4 col sopa)','C ~60g P ~4g'],['Feijao cozido','80g (3 col sopa)','P ~5g C ~14g'],['Legumes/verduras','150g a vontade','C ~8g fibras'],['Azeite extra virgem','10ml (1 col sopa)','G ~10g']]},
+    {n:'Peixe + arroz + legumes', its:[['Peixe (tilapia, atum, salmao)','200g','P ~40-46g'],['Arroz branco cozido','220g','C ~60g'],['Legumes/verduras','150g','C ~8g'],['Azeite','10ml','G ~10g']]},
+    {n:'Carne magra + batata-doce', its:[['Carne bovina magra (patinho)','180g cozida','P ~45g G ~8g'],['Batata-doce cozida','250g','C ~62g'],['Legumes/verduras','150g','C ~8g'],['Azeite','10ml','G ~10g']]}
+   ]},
+  {id:'lanche', time:'17:00-18:00', name:'Lanche - pos-treino', kcal:375, p:35, c:42, g:8, tag:'pos', note:'Uso mais estrategico do Whey - janela 30-60 min pos-musculacao das 15h.',
+   opts:[
+    {n:'Whey + pao frances', its:[['Whey protein','35g (1 scoop)','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pao frances','50g (1 unidade)','C ~28g P ~4g']]},
+    {n:'Whey + banana', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Banana prata','80g (1 unidade)','C ~18g']]},
+    {n:'Atum + pao frances', its:[['Atum em lata ao natural','120g (1 lata)','P ~26g G ~2g'],['Pao frances','50g','C ~28g P ~4g'],['Tomate + azeite','80g + 5ml','G ~5g']]}
+   ]},
+  {id:'jantar', time:'20:00', name:'Jantar - proteico baixo carbo', kcal:335, p:43, c:12, g:13, tag:'', note:'Carboidrato baixo intencional a noite. Minimo 10-15g preserva sono.',
+   opts:[
+    {n:'Omelete de frigideira', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Queijo minas ou cottage','40g','P ~6g G ~3g'],['Espinafre/tomate/cebola','80g','C ~5g'],['Azeite','5ml','G ~5g']]},
+    {n:'Atum + salada (3 minutos)', its:[['Atum em lata ao natural','240g (2 latas)','P ~52g G ~4g'],['Folhas de salada','100g','C ~4g'],['Azeite + limao','10ml','G ~10g']]},
+    {n:'Frango desfiado + salada', its:[['Frango desfiado cozido','150g','P ~45g G ~4g'],['Salada + azeite','100g + 5ml','C ~4g G ~5g'],['Pao de forma opcional','25g (1 fatia)','C ~11g']]},
+    {n:'Whey + leite (dias cansativos)', its:[['Whey protein','35g (1 scoop)','P ~27g'],['Leite sem lactose','300ml','P ~10g C ~14g G ~10g']]}
+   ]}
+],
+n: [
+  {id:'cafe', time:'07:30', name:'Cafe da manha', kcal:375, p:36, c:32, g:11, tag:'', note:'1 pacoquinha em vez de 2. Pasta de amendoim 25g tambem e boa opcao.',
+   opts:[
+    {n:'Whey + cafe + 1 pacoquinha', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pacoquinha Santa Helena','15g (1 unidade)','P ~2g C ~8g G ~4g']]},
+    {n:'Whey + cafe + pasta amendoim', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pasta de amendoim','25g (1.5 col sopa)','P ~6g C ~5g G ~13g']]},
+    {n:'Ovos + cafe sem pao', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Leite sem lactose','150ml','P ~5g C ~7g']]}
+   ]},
+  {id:'inter', time:'10:30', name:'Intermediario manha menor', kcal:170, p:17, c:14, g:5, tag:'', note:'',
+   opts:[
+    {n:'Iogurte grego puro', its:[['Iogurte grego sem lactose','170g (1 pote)','P ~17g C ~6g G ~9g']]},
+    {n:'Peru + fruta pequena', its:[['Presunto de peru','60g','P ~13g'],['Fruta pequena','100g','C ~14g']]}
+   ]},
+  {id:'almoco', time:'13:00', name:'Almoco', kcal:635, p:50, c:72, g:16, tag:'', note:'Mesma estrutura, porcao de carbo reduzida vs dia musculacao.',
+   opts:[
+    {n:'Frango + arroz reduzido + legumes', its:[['Frango / peixe / carne magra','180g cozida','P ~50g'],['Arroz branco cozido','175g (3 col sopa)','C ~48g'],['Feijao cozido','80g','P ~5g C ~14g'],['Legumes/verduras','150g','C ~8g'],['Azeite','10ml','G ~10g']]}
+   ]},
+  {id:'lanche', time:'17:00-17:30', name:'Lanche ao chegar da natacao', kcal:260, p:28, c:22, g:7, tag:'pos', note:'Proteina + carbo ao chegar e importante - nao espere ate o jantar.',
+   opts:[
+    {n:'Atum + torradas', its:[['Atum em lata ao natural','120g (1 lata)','P ~26g G ~2g'],['Torradas integrais','25g (3-4 torradas)','C ~17g'],['Tomate + azeite','80g + 5ml','G ~5g']]},
+    {n:'Iogurte grego + banana', its:[['Iogurte grego sem lactose','170g','P ~17g C ~6g'],['Banana prata','80g','C ~18g']]}
+   ]},
+  {id:'jantar', time:'20:00', name:'Jantar', kcal:315, p:42, c:10, g:12, tag:'', note:'',
+   opts:[
+    {n:'Omelete 3 ovos + queijo + legumes', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Queijo minas','40g','P ~6g G ~3g'],['Legumes + azeite','80g + 5ml','C ~5g']]},
+    {n:'Atum + salada', its:[['Atum em lata ao natural','240g (2 latas)','P ~52g G ~4g'],['Salada + azeite','100g + 10ml','C ~4g G ~10g']]}
+   ]}
+],
+d: [
+  {id:'cafe', time:'07:30', name:'Cafe da manha', kcal:365, p:34, c:26, g:14, tag:'', note:'Dia de descanso: pasta de amendoim e melhor - menos carbo, mais saciedade.',
+   opts:[
+    {n:'Whey + cafe + pasta amendoim', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','200ml','P ~7g C ~10g'],['Pasta de amendoim','25g (1.5 col sopa)','P ~6g C ~5g G ~13g']]},
+    {n:'Ovos + cafe sem pao', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Leite sem lactose','150ml','P ~5g C ~7g']]}
+   ]},
+  {id:'inter', time:'10:30', name:'Intermediario opcional', kcal:140, p:14, c:10, g:5, tag:'', note:'Pode omitir se nao sentir fome.',
+   opts:[
+    {n:'Iogurte grego pequeno', its:[['Iogurte grego sem lactose','120g','P ~12g C ~5g G ~6g']]},
+    {n:'Peru + fruta pequena', its:[['Presunto de peru','40g','P ~9g'],['Fruta pequena','100g','C ~14g']]}
+   ]},
+  {id:'almoco', time:'13:00', name:'Almoco', kcal:600, p:50, c:63, g:16, tag:'', note:'Carbo ainda mais reduzido vs dias de treino.',
+   opts:[
+    {n:'Frango + arroz reduzido + legumes', its:[['Frango / peixe / carne magra','180g cozida','P ~50g'],['Arroz branco cozido','150g (3 col sopa)','C ~41g'],['Feijao cozido','80g','P ~5g C ~14g'],['Legumes/verduras','150g','C ~8g'],['Azeite','10ml','G ~10g']]}
+   ]},
+  {id:'lanche', time:'17:00', name:'Lanche da tarde', kcal:205, p:22, c:16, g:6, tag:'', note:'Sem pao frances no descanso.',
+   opts:[
+    {n:'Atum + torradas + tomate', its:[['Atum em lata ao natural','120g','P ~27g G ~2g'],['Torradas integrais','20g (3 torradas)','C ~14g'],['Tomate','80g','C ~4g']]},
+    {n:'Ovos cozidos + fruta', its:[['Ovos cozidos','100g (2 ovos)','P ~13g G ~10g'],['Fruta pequena','100g','C ~14g']]}
+   ]},
+  {id:'jantar', time:'20:00', name:'Jantar', kcal:305, p:40, c:10, g:12, tag:'', note:'',
+   opts:[
+    {n:'Omelete 3 ovos + queijo + legumes', its:[['Ovos inteiros','150g (3 ovos)','P ~19g G ~15g'],['Queijo minas','40g','P ~6g G ~3g'],['Legumes + azeite','80g + 5ml','C ~5g']]},
+    {n:'Atum + salada + azeite', its:[['Atum em lata ao natural','240g (2 latas)','P ~52g G ~4g'],['Salada + azeite','100g + 10ml','C ~4g G ~10g']]},
+    {n:'Whey + leite', its:[['Whey protein','35g','P ~27g'],['Leite sem lactose','300ml','P ~10g C ~14g G ~10g']]}
+   ]}
+]
+};
+
+var TIMING = {
+m:[
+  {hr:'07:30',tp:'meal',ti:'Cafe da manha',bo:'Whey + leite + pacoquinha. Creatina 5g aqui.',hi:''},
+  {hr:'10:30',tp:'supl',ti:'D3+K2 + Omega-3',bo:'Com iogurte grego - gordura suficiente para absorcao.',hi:''},
+  {hr:'13:00',tp:'pre',ti:'Almoco - pre-treino natural (2h antes)',bo:'Carbo alto estrategico. Glicogenio disponivel as 15h.',hi:'Colageno 10-15g + Vit C 50mg: tomar as 14:00-14:30h'},
+  {hr:'14:30',tp:'supl',ti:'Colageno + Vitamina C',bo:'10-15g + 50mg em agua morna. 30-60 min antes do treino.',hi:''},
+  {hr:'15:00',tp:'pre',ti:'Treino - 45 min',bo:'Agua apenas. Sem intra-treino calorico necessario.',hi:''},
+  {hr:'17:00',tp:'pos',ti:'Lanche pos-treino - janela 30-60 min',bo:'Whey + leite + pao frances ou banana.',hi:'Janela mais importante do dia para nutricao'},
+  {hr:'20:00',tp:'meal',ti:'Jantar',bo:'Proteina alta + carbo baixo. Magnesio com o jantar.',hi:'Magnesio 200-400mg aqui'}
+],
+n:[
+  {hr:'07:30',tp:'meal',ti:'Cafe da manha',bo:'Whey + leite + pasta amendoim 25g. Creatina aqui.',hi:''},
+  {hr:'10:30',tp:'supl',ti:'D3+K2 + Omega-3',bo:'Com iogurte grego.',hi:''},
+  {hr:'13:00',tp:'meal',ti:'Almoco',bo:'Carbo levemente reduzido. Evite refeicao pesada 60 min antes da natacao.',hi:''},
+  {hr:'15:30',tp:'pre',ti:'Hidratacao pre-natacao',bo:'500ml de agua nos 60 min antes.',hi:''},
+  {hr:'16:00',tp:'pre',ti:'Natacao - 60 min',bo:'Agua durante. Voce sua na agua sem perceber.',hi:''},
+  {hr:'17:00',tp:'pos',ti:'Lanche ao chegar',bo:'Atum + torradas ou iogurte + banana.',hi:'Proteina + carbo em ate 60 min pos-natacao'},
+  {hr:'20:00',tp:'meal',ti:'Jantar',bo:'Igual ao dia musculacao. Magnesio com o jantar.',hi:''}
+],
+d:[
+  {hr:'07:30',tp:'meal',ti:'Cafe da manha',bo:'Whey + leite + pasta amendoim 25g. Creatina aqui.',hi:''},
+  {hr:'10:30',tp:'supl',ti:'D3+K2 + Omega-3',bo:'Com refeicao que tenha gordura.',hi:''},
+  {hr:'13:00',tp:'meal',ti:'Almoco',bo:'Carbo reduzido. Proteina mantida - sintese proteica pico 24-48h pos-treino.',hi:''},
+  {hr:'17:00',tp:'meal',ti:'Lanche da tarde',bo:'Atum + torradas ou ovos + fruta.',hi:''},
+  {hr:'20:00',tp:'meal',ti:'Jantar',bo:'Proteico + baixo carbo. Magnesio com o jantar.',hi:'Magnesio 200-400mg aqui'}
+]
+};
+
+var SUPLS = [
+  {nm:'Whey protein',co:'var(--blue)',rows:[['Dose','35g por scoop (~27g proteina) - max 2x por dia'],['Cafe 07:30','Com leite sem lactose - adiciona caseina e leucina'],['Pos-treino 17h','Uso mais estrategico - janela 30-60 min pos-musculacao'],['Natacao','Nao necessario - alimento real suficiente']]},
+  {nm:'Creatina monoidratada',co:'var(--green)',rows:[['Dose','5g/dia - dose unica - sem loading ou ciclagem'],['Quando','07:30 com o Whey - todos os dias inclusive descanso'],['Evidencia','Nivel A forca/hipertrofia. Neuroprotetora aos 48 anos.']]},
+  {nm:'Vitamina D3 + K2',co:'var(--amber)',rows:[['Dose D3','2.000-4.000 UI/dia - alvo serico 40-60 ng/mL'],['Dose K2','100mcg MK-7/dia junto com D3'],['Quando','10:30 com iogurte - lipossolevel, precisa de gordura']]},
+  {nm:'Omega-3 EPA+DHA',co:'var(--amber)',rows:[['Dose','2-4g EPA+DHA/dia (leia rotulo - nao oleo total)'],['Quando','10:30 com refeicao gordurosa'],['Racional','Joelho (artrose grau 1-2) + recuperacao + cardiovascular']]},
+  {nm:'Colageno hidrolisado + Vit C',co:'var(--purple)',rows:[['Dose','10-15g colageno + 50mg vitamina C'],['Quando','14:00-14:30 so dias musculacao - 30-60 min antes do treino'],['Outros dias','Nao necessario']]},
+  {nm:'Magnesio bisglicinato',co:'var(--text2)',rows:[['Dose','200-400mg magnesio elementar/dia'],['Quando','20:00 com jantar - relaxante muscular, melhora sono'],['Forma','Bisglicinato ou glicinato - sem efeito laxativo']]}
+];
+
+function getH(){try{return JSON.parse(localStorage.getItem('nh')||'[]')}catch(e){return[]}}
+function setH(h){localStorage.setItem('nh',JSON.stringify(h))}
+function getB(){try{return JSON.parse(localStorage.getItem('nb')||'[]')}catch(e){return[]}}
+function setB(b){localStorage.setItem('nb',JSON.stringify(b))}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+function init(){
+  var h=new Date().getHours();
+  document.getElementById('greeting').textContent=h<12?'BOM DIA':h<18?'BOA TARDE':'BOA NOITE';
+  var dow=new Date().getDay();
+  var day=dow===2||dow===4?'n':dow===6||dow===0?'d':'m';
+  selDay(day);
+  renderSupls();
+}
+
+function selDay(day){
+  DAY=day;SELOPT={};
+  ['m','n','d'].forEach(function(d){document.getElementById('btn-'+d).classList.toggle('active',d===day);});
+  renderMBar();renderMeals();checkSaved();
+}
+
+function checkSaved(){
+  var hist=getH();var key=todayKey();
+  var saved=hist.some(function(h){return h.date===key;});
+  document.getElementById('savedbanner').style.display=saved?'flex':'none';
+}
+
+function renderMBar(){
+  var d=DAYS[DAY];
+  var pp=Math.round(d.p*4/d.kcal*100);
+  var cp=Math.round(d.c*4/d.kcal*100);
+  var gp=100-pp-cp;
+  document.getElementById('mbar').innerHTML='<div class="mbartitle">MACROS DO DIA - '+d.label.toUpperCase()+'</div>'+
+    '<div class="mrow">'+
+    '<div class="mi"><div class="min" style="color:var(--green)">'+d.kcal+'</div><div class="miu">kcal</div><div class="mil">total</div></div>'+
+    '<div class="mi"><div class="min" style="color:var(--blue)">'+d.p+'g</div><div class="miu">prot</div><div class="mil">'+pp+'%</div></div>'+
+    '<div class="mi"><div class="min" style="color:var(--amber)">'+d.c+'g</div><div class="miu">carbo</div><div class="mil">'+cp+'%</div></div>'+
+    '<div class="mi"><div class="min" style="color:var(--green)">'+d.g+'g</div><div class="miu">gord</div><div class="mil">'+gp+'%</div></div>'+
+    '</div>'+
+    '<div class="mprog"><div class="mpp" style="flex:'+pp+'"></div><div class="mpc" style="flex:'+cp+'"></div><div class="mpf" style="flex:'+gp+'"></div></div>';
+}
+
+function renderMeals(){
+  var meals=MEALS[DAY];
+  var html='';
+  for(var i=0;i<meals.length;i++){
+    var m=meals[i];
+    var tagH=m.tag==='pre'?'<span class="mtag tpre">pre-treino 2h antes</span>':m.tag==='pos'?'<span class="mtag tpos">pos-treino 30-60 min</span>':'';
+    var sel=SELOPT[m.id];
+    var selH=sel!==undefined?'<div style="font-size:10px;color:var(--green);margin-top:4px">ok '+m.opts[sel].n+'</div>':'';
+    var optsH='';
+    for(var j=0;j<m.opts.length;j++){
+      var opt=m.opts[j];var isSel=sel===j;
+      var itsH='';
+      for(var k=0;k<opt.its.length;k++){
+        itsH+='<div class="oitem"><span class="oin">'+opt.its[k][0]+'</span><span class="oiq">'+opt.its[k][1]+'</span><span class="oim">'+opt.its[k][2]+'</span></div>';
+      }
+      optsH+='<div class="ob">'+
+        '<div class="ohdr" onclick="togOpt(\''+m.id+'\','+j+')">'+
+        '<div class="ohl">'+
+        '<div class="onum'+(isSel?' sel':'')+'>'+(j+1)+'</div>'+
+        '<div class="oname'+(isSel?' sel':'')+'">'+opt.n+'</div>'+
+        '</div>'+
+        '<button class="selbtn'+(isSel?' sel':'')+'" onclick="selOpt(\''+m.id+'\','+j+',event)">'+(isSel?'ok Escolhida':'Marcar')+'</button>'+
+        '</div>'+
+        '<div class="oitems" id="oi-'+m.id+'-'+j+'" style="display:'+(isSel?'flex':'none')+'">'+itsH+'</div>'+
+        '</div>';
+    }
+    html+='<div class="mc">'+
+      '<div class="mchdr" onclick="togMeal(\''+m.id+'\')">'+
+      '<div class="mcl"><div class="mtime">'+m.time+'</div><div class="mname">'+m.name+'</div>'+tagH+selH+'</div>'+
+      '<div class="mcr"><div class="mkcal">'+m.kcal+' kcal</div><div class="mpfc">P'+m.p+' C'+m.c+' G'+m.g+'</div></div>'+
+      '</div>'+
+      '<div class="mbody" id="mb-'+m.id+'">'+optsH+(m.note?'<div class="mnote">'+m.note+'</div>':'')+'</div>'+
+      '</div>';
+  }
+  document.getElementById('mlist').innerHTML=html;
+}
+
+function togMeal(id){
+  var b=document.getElementById('mb-'+id);var op=b.classList.contains('open');
+  var all=document.querySelectorAll('.mbody');for(var i=0;i<all.length;i++)all[i].classList.remove('open');
+  if(!op)b.classList.add('open');
+}
+
+function togOpt(mid,oi){
+  var el=document.getElementById('oi-'+mid+'-'+oi);
+  if(el)el.style.display=el.style.display==='none'?'flex':'none';
+}
+
+function selOpt(mid,oi,e){
+  e.stopPropagation();SELOPT[mid]=oi;renderMeals();
+  setTimeout(function(){var b=document.getElementById('mb-'+mid);if(b)b.classList.add('open');},10);
+}
+
+function saveToday(){
+  var hist=getH();var key=todayKey();
+  var sels=[];
+  var meals=MEALS[DAY];
+  for(var id in SELOPT){
+    var oi=SELOPT[id];
+    var meal=null;for(var i=0;i<meals.length;i++){if(meals[i].id===id){meal=meals[i];break;}}
+    if(meal)sels.push({mealId:id,mealName:meal.name,optName:meal.opts[oi].n});
+  }
+  var entry={date:key,dayType:DAY,dayLabel:DAYS[DAY].label,kcal:DAYS[DAY].kcal,selections:sels,savedAt:new Date().toISOString()};
+  var idx=-1;for(var i=0;i<hist.length;i++){if(hist[i].date===key){idx=i;break;}}
+  if(idx>=0)hist[idx]=entry;else hist.unshift(entry);
+  setH(hist);
+  document.getElementById('savedbanner').style.display='flex';
+  alert('Dia registrado com sucesso!');
+}
+
+function selTimingDay(day){
+  TDAY=day;
+  ['m','n','d'].forEach(function(d){document.getElementById('tbtn-'+d).classList.toggle('active',d===day);});
+  renderTiming();
+}
+
+function renderTiming(){
+  var items=TIMING[TDAY];var html='<div class="tlwrap">';
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    html+='<div class="tlrow">'+
+      '<div class="tll"><div class="tlhr">'+it.hr+'</div><div class="tlline"></div></div>'+
+      '<div class="tlcard '+it.tp+'">'+
+      '<div class="tltitle">'+it.ti+'</div>'+
+      '<div class="tlbody">'+it.bo+'</div>'+
+      (it.hi?'<div class="tlhi">'+it.hi+'</div>':'')+
+      '</div></div>';
+  }
+  html+='</div>';
+  document.getElementById('tcontent').innerHTML=html;
+}
+
+function renderSupls(){
+  var html='';
+  for(var i=0;i<SUPLS.length;i++){
+    var s=SUPLS[i];
+    html+='<div class="scard"><div class="sname" style="color:'+s.co+'">'+s.nm+'</div>';
+    for(var j=0;j<s.rows.length;j++){
+      html+='<div class="srow"><span class="srl">'+s.rows[j][0]+'</span><span class="srv">'+s.rows[j][1]+'</span></div>';
+    }
+    html+='</div>';
+  }
+  document.getElementById('slist').innerHTML=html;
+}
+
+function renderHist(){
+  var hist=getH();var bio=getB();
+  var now=new Date();var sow=new Date(now);sow.setDate(now.getDate()-now.getDay());sow.setHours(0,0,0,0);
+  var tw=hist.filter(function(h){return new Date(h.savedAt||h.date+'T12:00:00')>=sow;});
+  var lastBio=bio.length?bio[bio.length-1]:null;
+  document.getElementById('hstats').innerHTML=
+    '<div class="sc"><div class="scn" style="color:var(--green)">'+tw.length+'</div><div class="scl">dias esta semana</div></div>'+
+    '<div class="sc"><div class="scn" style="color:var(--blue)">'+hist.length+'</div><div class="scl">total de dias</div></div>'+
+    '<div class="sc"><div class="scn" style="color:var(--amber);font-size:16px;padding-top:4px">'+(lastBio&&lastBio.peso?lastBio.peso+'kg':'--')+'</div><div class="scl">ultimo peso</div></div>'+
+    '<div class="sc"><div class="scn" style="color:var(--teal);font-size:16px;padding-top:4px">'+(lastBio&&lastBio.gord?lastBio.gord+'%':'--')+'</div><div class="scl">ultimo % gordura</div></div>';
+  renderBioHist();
+  var c=document.getElementById('hlist');
+  if(!hist.length){c.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Nenhum dia registrado ainda.<br>Use o botao Registrar dia de hoje.</div>';return;}
+  var html='';
+  for(var i=0;i<Math.min(hist.length,30);i++){
+    var h=hist[i];
+    var badge=h.dayType==='m'?'background:var(--bdim);color:var(--blue)':h.dayType==='n'?'background:var(--tdim);color:var(--teal)':'background:var(--bg3);color:var(--text2)';
+    var sels=h.selections||[];
+    var selsH=sels.length?sels.map(function(s){return'<div class="hdm"><span class="hdmn">'+s.mealName+':</span><span class="hdmo">'+s.optName+'</span></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">Sem opcoes marcadas</div>';
+    html+='<div class="hditem"><div class="hdtop"><div class="hddate">'+h.date+'</div><div class="hdtype" style="'+badge+'">'+h.dayLabel+' '+h.kcal+'kcal</div></div><div class="hdmeals">'+selsH+'</div></div>';
+  }
+  c.innerHTML=html;
+}
+
+function saveBio(){
+  var peso=parseFloat(document.getElementById('bio-peso').value);
+  var mm=parseFloat(document.getElementById('bio-mm').value);
+  var gord=parseFloat(document.getElementById('bio-gord').value);
+  var gkg=parseFloat(document.getElementById('bio-gkg').value);
+  if(isNaN(peso)&&isNaN(mm)&&isNaN(gord)&&isNaN(gkg)){alert('Preencha pelo menos um campo.');return;}
+  var bio=getB();
+  bio.push({date:todayKey(),savedAt:new Date().toISOString(),peso:isNaN(peso)?null:peso,mm:isNaN(mm)?null:mm,gord:isNaN(gord)?null:gord,gkg:isNaN(gkg)?null:gkg});
+  setB(bio);
+  ['bio-peso','bio-mm','bio-gord','bio-gkg'].forEach(function(id){document.getElementById(id).value='';});
+  alert('Medicao salva!');
+  renderBioHist();
+}
+
+function renderBioHist(){
+  var bio=getB();var c=document.getElementById('biohist');
+  if(!bio.length){c.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">Nenhuma medicao ainda.</div>';return;}
+  var rev=bio.slice().reverse().slice(0,8);
+  var html='';
+  for(var i=0;i<rev.length;i++){
+    var e=rev[i];var prev=rev[i+1];
+    var dp=prev&&e.peso&&prev.peso?e.peso-prev.peso:null;
+    var dm=prev&&e.mm&&prev.mm?e.mm-prev.mm:null;
+    var dg=prev&&e.gord&&prev.gord?e.gord-prev.gord:null;
+    function fmtVal(v,d,unit,inv){
+      if(v===null||v===undefined)return'<div class="beval"><div class="ben">--</div><div class="bel">'+unit+'</div></div>';
+      var dc='';if(d!==null&&d!==undefined){var cls=d>0?(inv?'dn':'up'):(d<0?(inv?'up':'dn'):'');dc='<div class="bed '+cls+'">'+(d>0?'+':'')+d.toFixed(1)+'</div>';}
+      return'<div class="beval"><div class="ben">'+v+unit+'</div>'+dc+'</div>';
+    }
+    html+='<div class="bioe"><span class="bedate">'+e.date+'</span><div class="bevals">'+fmtVal(e.peso,dp,'kg',false)+fmtVal(e.mm,dm,'kg',false)+fmtVal(e.gord,dg,'%',true)+'</div></div>';
+  }
+  c.innerHTML=html;
+}
+
+function expJSON(){
+  var data={nutHistory:getH(),bioHistory:getB(),exportDate:new Date().toISOString(),version:1};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');
+  a.href=url;a.download='nutricao-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);
+}
+
+function impData(event){
+  var file=event.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(data.nutHistory)setH(data.nutHistory);
+      if(data.bioHistory)setB(data.bioHistory);
+      alert('Backup importado com sucesso!');
+      renderHist();
+    }catch(err){alert('Arquivo invalido.');}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+
+function clearData(){
+  if(confirm('Apagar TODOS os dados nutricionais e bioimpedancia?')){
+    localStorage.removeItem('nh');localStorage.removeItem('nb');
+    alert('Dados apagados.');renderHist();
+  }
+}
+
+function expClaude(){
+  var hist=getH();var bio=getB();
+  var txt='DADOS NUTRICIONAIS E EVOLUCAO CORPORAL - '+new Date().toLocaleString('pt-BR')+'\n\n';
+  txt+='=== BIOIMPEDANCIA ===\n';
+  for(var i=0;i<bio.length;i++){var b=bio[i];txt+=b.date+': Peso '+(b.peso||'?')+'kg MM '+(b.mm||'?')+'kg Gordura '+(b.gord||'?')+'% ('+(b.gkg||'?')+'kg)\n';}
+  txt+='\n=== HISTORICO NUTRICIONAL ===\n';
+  for(var i=0;i<Math.min(hist.length,30);i++){
+    var h=hist[i];txt+=h.date+' - '+h.dayLabel+' ('+h.kcal+' kcal)\n';
+    var sels=h.selections||[];for(var j=0;j<sels.length;j++)txt+='  '+sels[j].mealName+': '+sels[j].optName+'\n';
+  }
+  try{navigator.clipboard.writeText(txt).then(function(){alert('Dados copiados! Cole no chat do Claude.');});}
+  catch(e){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Dados copiados!');}
+}
+
+function expPDF(){
+  var hist=getH();var bio=getB();
+  var body='<h1 style="font-family:sans-serif;font-size:22px;margin-bottom:4px">Relatorio Nutricional</h1>';
+  body+='<p style="font-family:sans-serif;font-size:12px;color:#888;margin-bottom:24px">Gerado em '+new Date().toLocaleString('pt-BR')+'</p>';
+  if(bio.length){
+    body+='<h2 style="font-family:sans-serif;font-size:15px;margin:16px 0 8px">Evolucao Corporal</h2>';
+    body+='<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:11px;margin-bottom:20px"><thead><tr style="background:#f5f5f5"><th style="text-align:left;padding:6px 8px;border:1px solid #ddd">Data</th><th style="padding:6px 8px;border:1px solid #ddd">Peso</th><th style="padding:6px 8px;border:1px solid #ddd">Massa Magra</th><th style="padding:6px 8px;border:1px solid #ddd">% Gordura</th><th style="padding:6px 8px;border:1px solid #ddd">Gordura kg</th></tr></thead><tbody>';
+    for(var i=0;i<bio.length;i++){var b=bio[i];body+='<tr><td style="padding:5px 8px;border:1px solid #eee">'+b.date+'</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+(b.peso||'--')+'kg</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+(b.mm||'--')+'kg</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+(b.gord||'--')+'%</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+(b.gkg||'--')+'kg</td></tr>';}
+    body+='</tbody></table>';
+  }
+  if(hist.length){
+    body+='<h2 style="font-family:sans-serif;font-size:15px;margin:16px 0 8px">Historico Nutricional</h2>';
+    body+='<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:11px"><thead><tr style="background:#f5f5f5"><th style="text-align:left;padding:6px 8px;border:1px solid #ddd">Data</th><th style="padding:6px 8px;border:1px solid #ddd">Tipo</th><th style="padding:6px 8px;border:1px solid #ddd">kcal</th><th style="text-align:left;padding:6px 8px;border:1px solid #ddd">Refeicoes</th></tr></thead><tbody>';
+    for(var i=0;i<Math.min(hist.length,60);i++){var h=hist[i];var sstr=(h.selections||[]).map(function(s){return s.mealName+': '+s.optName;}).join(' | ')||'--';body+='<tr><td style="padding:5px 8px;border:1px solid #eee">'+h.date+'</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+h.dayLabel+'</td><td style="padding:5px 8px;border:1px solid #eee;text-align:center">'+h.kcal+'</td><td style="padding:5px 8px;border:1px solid #eee;font-size:10px">'+sstr+'</td></tr>';}
+    body+='</tbody></table>';
+  }
+  var win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatorio Nutricional</title><style>@media print{button{display:none!important}}body{margin:24px;color:#111;font-family:sans-serif}</style></head><body><div style="text-align:right;margin-bottom:16px"><button onclick="window.print()" style="padding:10px 20px;background:#3ddc84;color:#000;border:none;border-radius:8px;font-size:14px;cursor:pointer">Salvar como PDF (Ctrl+P)</button></div>'+body+'</body></html>');
+  win.document.close();
+}
+
+function goTab(tab){
+  var screens=document.querySelectorAll('.screen');for(var i=0;i<screens.length;i++)screens[i].classList.remove('active');
+  var btns=document.querySelectorAll('.nbtn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');
+  document.getElementById('screen-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='timing')renderTiming();
+  if(tab==='hist')renderHist();
+  window.scrollTo(0,0);
+}
+
+init();
+</script>
+</body>
+</html>
